@@ -15,5 +15,10 @@ struct FPuzzleSpace
         ATriggerVolume* PuzzleSpace;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        AActor* PuzzlePieceExpected;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        float PuzzlePieceRotationExpected;
+
         bool bAvailable = true;
 };
