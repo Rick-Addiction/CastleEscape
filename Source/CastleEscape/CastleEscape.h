@@ -6,6 +6,16 @@
 #include "Engine/TriggerVolume.h"
 #include "CastleEscape.generated.h"
 
+UENUM(BlueprintType)
+enum class EPuzzleRotation : uint8 {
+
+    UP UMETA(DisplayName = "UP"),
+    LEFT UMETA(DisplayName = "LEFT"),
+    DOWN UMETA(DisplayName = "DOWN"),    
+    RIGHT UMETA(DisplayName = "RIGHT")
+    
+};
+
 USTRUCT(BlueprintType)
 struct FPuzzleSpace
 {
@@ -17,8 +27,13 @@ struct FPuzzleSpace
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         AActor* PuzzlePieceExpected;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        float PuzzlePieceRotationExpected;
+    AActor* CurrentPuzzlePiecePlaced;
 
-        bool bAvailable = true;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        EPuzzleRotation PuzzlePieceRotationExpected;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    EPuzzleRotation CurrentPuzzlePieceRotation;
+
+    bool bAvailable = true;
 };
