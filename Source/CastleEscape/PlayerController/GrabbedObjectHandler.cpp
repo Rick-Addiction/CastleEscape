@@ -10,11 +10,12 @@ UGrabbedObjectHandler* UGrabbedObjectHandler::MAKE(EGrabbedObjectType ObjectType
     if (ObjectType == EGrabbedObjectType::PUZZLE_PIECE) {
         GrabbedObjectHandler = NewObject<UJigsawPieceHandler>(UJigsawPieceHandler::StaticClass());
         GrabbedObjectHandler->InitHandler(PhysicsHandle,GrabbedObject);
+        
         return GrabbedObjectHandler;
     }
     else if(ObjectType == EGrabbedObjectType::GEM){
         GrabbedObjectHandler = NewObject<UGemHandler>(UGemHandler::StaticClass());
-        GrabbedObjectHandler->PhysicsHandle = PhysicsHandle;
+        GrabbedObjectHandler->InitHandler(PhysicsHandle, GrabbedObject);
         return GrabbedObjectHandler;
     }
     else
@@ -34,7 +35,7 @@ void UGrabbedObjectHandler::SetPhysicsHandle(UPhysicsHandleComponent* PhysicsHan
 
 void UGrabbedObjectHandler::SetGrabbedObject(UGrabbedObject* GrabbedObjectToSet) {
     if(GrabbedObjectToSet){
-        GrabbedObject = GrabbedObjectToSet;
+        GrabbedObject = GrabbedObjectToSet;        
     }
     else {
         UE_LOG(LogTemp, Error, TEXT("You tried to set a NULL GrabbedObjectToSet to the GrabbedObjectHandler"));

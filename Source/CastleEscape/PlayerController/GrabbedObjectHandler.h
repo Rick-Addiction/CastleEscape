@@ -37,7 +37,7 @@ class CASTLEESCAPE_API UGrabbedObjectHandler : public UObject
     FRotator GetCurrentGrabbedObjectRotation();
 
     protected:
-    float Reach = 100.f;
+    float Reach = 50.f;
     UPhysicsHandleComponent* PhysicsHandle = nullptr;
     UGrabbedObject* GrabbedObject = nullptr;
 
