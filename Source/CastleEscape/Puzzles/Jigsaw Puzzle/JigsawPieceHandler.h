@@ -14,14 +14,15 @@ class CASTLEESCAPE_API UJigsawPieceHandler : public UGrabbedObjectHandler
 
 	public:
 		UJigsawPieceHandler();
-		void MoveObject() override;
-		void InitHandler(UPhysicsHandleComponent* PhysicsHandle, UGrabbedObject* GrabbedObject) override;
-		void DestroyHandler() override;
+		virtual void MoveObject() override;
+		virtual void InitHandler(UPhysicsHandleComponent* PhysicsHandle, UGrabbedObject* GrabbedObject) override;
+		virtual void DestroyHandler() override;
+		virtual void UpdatePuzzleSpace() override;
 		void SetupInputComponent();
 		
 		void SetInitialRotation();
 
-		void UpdatePuzzleSpace();
+		
 		void SpinJigsawPiece();
 
 	private:

@@ -32,4 +32,18 @@ void UGemHandler::MoveObject()
 	NewGrabbedObjectRotation.Pitch += 90;
 	PhysicsHandle->SetTargetRotation(NewGrabbedObjectRotation);
 
+	UpdatePuzzleSpace();
+}
+
+void UGemHandler::UpdatePuzzleSpace() {
+	if (!GrabbedObject) { return; }
+
+	FHitResult PuzzleSpace = UGrabber::GetFirstPuzzleSpaceInReach(100.f);
+
+	if (PuzzleSpace.GetActor() != nullptr) {
+		((UGem*)GrabbedObject)->SetPuzzleSpace(PuzzleSpace.GetActor());
+	}
+	else {
+		((UGem*)GrabbedObject)->SetPuzzleSpace(nullptr);
+	}
 }

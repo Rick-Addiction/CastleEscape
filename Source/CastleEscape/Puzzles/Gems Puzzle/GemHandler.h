@@ -12,7 +12,8 @@ class CASTLEESCAPE_API UGemHandler : public UGrabbedObjectHandler
 
 public:
 	UGemHandler();
-	void MoveObject() override;
-	void InitHandler(UPhysicsHandleComponent* PhysicsHandle, UGrabbedObject* GrabbedObject) override;
-	void DestroyHandler() override;
+	virtual void MoveObject() override;
+	virtual void InitHandler(UPhysicsHandleComponent* PhysicsHandle, UGrabbedObject* GrabbedObject) override;
+	virtual void DestroyHandler() override;
+	virtual void UpdatePuzzleSpace() override;
 };

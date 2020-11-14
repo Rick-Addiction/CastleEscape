@@ -28,6 +28,7 @@ class CASTLEESCAPE_API UGrabbedObjectHandler : public UObject
     virtual void MoveObject() { check(0 && "You must override this"); }
     virtual void InitHandler(UPhysicsHandleComponent* PhysicsHandle, UGrabbedObject* GrabbedObject) { check(0 && "You must override this"); }
     virtual void DestroyHandler() { check(0 && "You must override this"); }
+    virtual void UpdatePuzzleSpace() { check(0 && "You must override this"); }
 
     void UpdateGrabbedObjectStatus(bool NewStatus);
    
@@ -40,7 +41,5 @@ class CASTLEESCAPE_API UGrabbedObjectHandler : public UObject
     float Reach = 50.f;
     UPhysicsHandleComponent* PhysicsHandle = nullptr;
     UGrabbedObject* GrabbedObject = nullptr;
-
-
 };
 

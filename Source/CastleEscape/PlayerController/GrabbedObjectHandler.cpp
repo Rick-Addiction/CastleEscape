@@ -29,8 +29,6 @@ void UGrabbedObjectHandler::SetPhysicsHandle(UPhysicsHandleComponent* PhysicsHan
     else {
         UE_LOG(LogTemp, Error, TEXT("You tried to set a NULL UPhysicsHandleComponent to the GrabbedObjectHandler"));
     }
-
-    
 }
 
 void UGrabbedObjectHandler::SetGrabbedObject(UGrabbedObject* GrabbedObjectToSet) {
