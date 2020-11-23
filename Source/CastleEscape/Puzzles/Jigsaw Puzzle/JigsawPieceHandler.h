@@ -1,10 +1,8 @@
-// Copyright Henrique Rachti Assumpção 2020
+// Copyright Henrique Rachti Assumpï¿½ï¿½o 2020
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/InputComponent.h"
-#include <CastleEscape\Puzzles\Jigsaw Puzzle\JigsawPiece.h>
-#include <CastleEscape\PlayerController\GrabbedObjectHandler.h>
+#include "CastleEscape/PlayerController/GrabbedObjectHandler.h"
 #include "JigsawPieceHandler.generated.h"
 
 UCLASS()
@@ -18,14 +16,14 @@ class CASTLEESCAPE_API UJigsawPieceHandler : public UGrabbedObjectHandler
 		virtual void InitHandler(UPhysicsHandleComponent* PhysicsHandle, UGrabbedObject* GrabbedObject) override;
 		virtual void DestroyHandler() override;
 		virtual void UpdatePuzzleSpace() override;
-		void SetupInputComponent();
-		
-		void SetInitialRotation();
 
-		
+		void SetupInputComponent();		
+		void SetInitialRotation() const;		
 		void SpinJigsawPiece();
 
 	private:
+	
+	UPROPERTY()
 	UInputComponent* InputComponent = nullptr;
 
 

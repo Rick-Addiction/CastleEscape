@@ -2,9 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include <CastleEscape\PlayerController\GrabbedObjectHandler.h>
+#include "CastleEscape/PlayerController/GrabbedObjectHandler.h"
 #include "GemHandler.generated.h"
 
+class UGemsPuzzle;
 UCLASS()
 class CASTLEESCAPE_API UGemHandler : public UGrabbedObjectHandler
 {
@@ -16,4 +17,8 @@ public:
 	virtual void InitHandler(UPhysicsHandleComponent* PhysicsHandle, UGrabbedObject* GrabbedObject) override;
 	virtual void DestroyHandler() override;
 	virtual void UpdatePuzzleSpace() override;
+
+private:
+	UGemsPuzzle* CurrentStatue = nullptr;
+	float DistanceToSearchForPuzzleSpaces = 100.f;
 };

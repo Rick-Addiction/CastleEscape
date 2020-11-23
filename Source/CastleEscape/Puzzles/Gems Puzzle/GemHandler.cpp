@@ -1,7 +1,7 @@
 // Copyright Henrique Rachti Assumpção 2020
 
 #include "GemHandler.h"
-#include <CastleEscape\PlayerController\Grabber.h>
+#include "CastleEscape/PlayerController/Grabber.h"
 
 UGemHandler::UGemHandler()
 {
@@ -18,32 +18,44 @@ void UGemHandler::InitHandler(UPhysicsHandleComponent* PhysicsHandle, UGrabbedOb
 void UGemHandler::DestroyHandler() {
 	UpdateGrabbedObjectStatus(false);
 
-	PhysicsHandle = nullptr;
-	GrabbedObject = nullptr;
+	PhysicsHandleUsed = nullptr;
+	CurrentGrabbedObject = nullptr;
 }
 
 void UGemHandler::MoveObject()
 {
-	if (!PhysicsHandle) { return; }
+	if (!PhysicsHandleUsed) { return; }
+	
+	if(PhysicsHandleUsed->GetGrabbedComponent())
+	{
+		PhysicsHandleUsed->SetTargetLocation(UGrabber::GetPlayersReachPos(50.f));
 
-	PhysicsHandle->SetTargetLocation(UGrabber::GetPlayersReachPos(Reach));
-
-	FRotator NewGrabbedObjectRotation = UGrabber::GetPlayersRotation();
-	NewGrabbedObjectRotation.Pitch += 90;
-	PhysicsHandle->SetTargetRotation(NewGrabbedObjectRotation);
-
+		FRotator NewGrabbedObjectRotation = UGrabber::GetPlayersRotation();
+		NewGrabbedObjectRotation.Pitch += 90;
+		PhysicsHandleUsed->SetTargetRotation(NewGrabbedObjectRotation);
+	}
 	UpdatePuzzleSpace();
 }
 
 void UGemHandler::UpdatePuzzleSpace() {
-	if (!GrabbedObject) { return; }
+	if (!CurrentGrabbedObject) { return; }
 
-	FHitResult PuzzleSpace = UGrabber::GetFirstPuzzleSpaceInReach(100.f);
+	const FHitResult PuzzleSpace = UGrabber::GetFirstPuzzleSpaceInReach(DistanceToSearchForPuzzleSpaces);
 
-	if (PuzzleSpace.GetActor() != nullptr) {
-		((UGem*)GrabbedObject)->SetPuzzleSpace(PuzzleSpace.GetActor());
+	if (PuzzleSpace.GetActor()) {
+
+		if(static_cast<UGem*>(CurrentGrabbedObject)->GetPuzzleManager())
+		{
+			static_cast<UGem*>(CurrentGrabbedObject)->SetPuzzle((static_cast<UGem*>(CurrentGrabbedObject))->GetPuzzleManager()->GetGemsPuzzleByPuzzleSpace(static_cast<ATriggerVolume*>(PuzzleSpace.GetActor())));
+		}
+		else
+		{
+			UE_LOG(LogTemp,Warning,TEXT("No Puzzle Manager"));	
+		}
+		
+		static_cast<UGem*>(CurrentGrabbedObject)->SetPuzzleSpace(static_cast<ATriggerVolume*>(PuzzleSpace.GetActor()));
 	}
 	else {
-		((UGem*)GrabbedObject)->SetPuzzleSpace(nullptr);
+		static_cast<UGem*>(CurrentGrabbedObject)->SetPuzzleSpace(nullptr);		
 	}
 }

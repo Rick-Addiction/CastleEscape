@@ -26,8 +26,8 @@ void UJigsawPieceHandler::DestroyHandler() {
 		InputComponent->RemoveActionBinding("Spin", IE_Pressed);
 	}
 
-	PhysicsHandle = nullptr;
-	GrabbedObject = nullptr;
+	PhysicsHandleUsed = nullptr;
+	CurrentGrabbedObject = nullptr;
 	InputComponent = nullptr;
 }
 
@@ -42,48 +42,49 @@ void UJigsawPieceHandler::SetupInputComponent() {
 	}
 }
 
-void UJigsawPieceHandler::SetInitialRotation(){
-	if (!PhysicsHandle) { return; }
-	if (!GrabbedObject) { return; }
+void UJigsawPieceHandler::SetInitialRotation() const{
+	if (!PhysicsHandleUsed) { return; }
+	if (!CurrentGrabbedObject) { return; }
 
 	FRotator InitialPuzzlePieceRotation = UGrabber::GetPlayersRotation();
-	InitialPuzzlePieceRotation.Roll = ((UJigsawPiece*)GrabbedObject)->GetCurrentRotationRoll();
-	PhysicsHandle->SetTargetRotation(InitialPuzzlePieceRotation);
+	InitialPuzzlePieceRotation.Roll = static_cast<UJigsawPiece*>(CurrentGrabbedObject)->GetCurrentRotationRoll();
+	PhysicsHandleUsed->SetTargetRotation(InitialPuzzlePieceRotation);
 }
 
 void UJigsawPieceHandler::MoveObject()
 {
-	if (!PhysicsHandle) { return; }
+	if (!PhysicsHandleUsed) { return; }
 
-	PhysicsHandle->SetTargetLocation(UGrabber::GetPlayersReachPos(Reach));
+	PhysicsHandleUsed->SetTargetLocation(UGrabber::GetPlayersReachPos(Reach));
 
 	FRotator NewGrabbedObjectRotation = GetCurrentGrabbedObjectRotation();
 	NewGrabbedObjectRotation.Pitch = UGrabber::GetPlayersRotation().Pitch;
 	NewGrabbedObjectRotation.Yaw = UGrabber::GetPlayersRotation().Yaw;
-	PhysicsHandle->SetTargetRotation(NewGrabbedObjectRotation);
+	PhysicsHandleUsed->SetTargetRotation(NewGrabbedObjectRotation);
 
 	UpdatePuzzleSpace();
 }
 
 void UJigsawPieceHandler::UpdatePuzzleSpace() {
-	if (!GrabbedObject) { return; }
+	if (!CurrentGrabbedObject) { return; }
 
-	FHitResult PuzzleSpace = UGrabber::GetFirstPuzzleSpaceInReach(Reach);
+	const FHitResult PuzzleSpace = UGrabber::GetFirstPuzzleSpaceInReach(Reach);
 
 	if (PuzzleSpace.GetActor() != nullptr) {
-		((UJigsawPiece*)GrabbedObject)->SetPuzzleSpace(PuzzleSpace.GetActor());
+		static_cast<UJigsawPiece*>(CurrentGrabbedObject)->SetPuzzleSpace(static_cast<ATriggerVolume*>(PuzzleSpace.GetActor()));
+		
 	}
 	else {
-		((UJigsawPiece*)GrabbedObject)->SetPuzzleSpace(nullptr);
+		static_cast<UJigsawPiece*>(CurrentGrabbedObject)->SetPuzzleSpace(nullptr);
 	}
 }
 
-void UJigsawPieceHandler::SpinJigsawPiece() {
-	if (!PhysicsHandle) { return; }
-	if (!GrabbedObject) { return; }
+void UJigsawPieceHandler::SpinJigsawPiece(){
+	if (!PhysicsHandleUsed) { return; }
+	if (!CurrentGrabbedObject) { return; }
 
 	FRotator CurrentGrabbedObjectRotation = GetCurrentGrabbedObjectRotation();
-	CurrentGrabbedObjectRotation.Roll = ((UJigsawPiece*)GrabbedObject)->GetNextRotationRoll();
-	PhysicsHandle->SetTargetRotation(CurrentGrabbedObjectRotation);
+	CurrentGrabbedObjectRotation.Roll = static_cast<UJigsawPiece*>(CurrentGrabbedObject)->GetNextRotationRoll();
+	PhysicsHandleUsed->SetTargetRotation(CurrentGrabbedObjectRotation);
 }
 
