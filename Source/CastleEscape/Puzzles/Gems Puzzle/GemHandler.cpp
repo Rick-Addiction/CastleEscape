@@ -50,7 +50,7 @@ void UGemHandler::UpdatePuzzleSpace() {
 		}
 		else
 		{
-			UE_LOG(LogTemp,Warning,TEXT("No Puzzle Manager"));	
+			UE_LOG(LogTemp,Warning,TEXT("No Puzzle Managerrt"));	
 		}
 		
 		static_cast<UGem*>(CurrentGrabbedObject)->SetPuzzleSpace(static_cast<ATriggerVolume*>(PuzzleSpace.GetActor()));
