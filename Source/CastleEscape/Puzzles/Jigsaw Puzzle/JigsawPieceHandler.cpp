@@ -3,38 +3,45 @@
 #include "JigsawPieceHandler.h"
 #include "Engine/World.h"
 #include "Components/InputComponent.h"
-#include <CastleEscape\PlayerController\Grabber.h>
+#include <CastleEscape\PlayerController\ObjectSeeker.h>
+
+#include "JigsawPiece.h"
+#include "PlayerController/PlayerCharacter.h"
 
 UJigsawPieceHandler::UJigsawPieceHandler()
 {
 	
 }
 
-void UJigsawPieceHandler::InitHandler(UPhysicsHandleComponent* PhysicsHandle,UGrabbedObject* GrabbedObject) {
+void UJigsawPieceHandler::InitHandler(AActor* GrabbedObject) {
 
-	SetPhysicsHandle(PhysicsHandle);
-	SetGrabbedObject(GrabbedObject);
+	SetGrabbedObject(GrabbedObject->FindComponentByClass<UJigsawPiece>());
 	SetInitialRotation();
 	SetupInputComponent();
-	UpdateGrabbedObjectStatus(true);	
+	UpdateGrabbedObjectStats(true);	
 }
 
 void UJigsawPieceHandler::DestroyHandler() {
-	UpdateGrabbedObjectStatus(false);
+	UpdateGrabbedObjectStats(false);
 
+	UInputComponent* InputComponent = UPlayerCharacter::GetInputComponent();
 	if (InputComponent) {
 		InputComponent->RemoveActionBinding("Spin", IE_Pressed);
+		InputComponent->RemoveActionBinding("Grab", IE_Released);
 	}
 
-	PhysicsHandleUsed = nullptr;
 	CurrentGrabbedObject = nullptr;
-	InputComponent = nullptr;
+	
 }
 
 void UJigsawPieceHandler::SetupInputComponent() {
-	InputComponent = UGrabber::World->GetFirstPlayerController()->FindComponentByClass<UInputComponent>();
+
+	Super::SetupInputComponent();
+	
+	UInputComponent* InputComponent = UPlayerCharacter::GetInputComponent();
 
 	if (InputComponent) {
+		InputComponent->BindAction("Grab", IE_Released, this, &UGrabbableObjectHandler::Release);
 		InputComponent->BindAction("Spin", IE_Pressed, this, &UJigsawPieceHandler::SpinJigsawPiece);		
 	}
 	else {
@@ -43,32 +50,38 @@ void UJigsawPieceHandler::SetupInputComponent() {
 }
 
 void UJigsawPieceHandler::SetInitialRotation() const{
-	if (!PhysicsHandleUsed) { return; }
+	UPhysicsHandleComponent* PhysicsHandle = UPlayerCharacter::GetPhysicsHandle();
+	if (!PhysicsHandle) { return; }
 	if (!CurrentGrabbedObject) { return; }
 
-	FRotator InitialPuzzlePieceRotation = UGrabber::GetPlayersRotation();
+	FRotator InitialPuzzlePieceRotation = UPlayerCharacter::GetPlayersRotation();
 	InitialPuzzlePieceRotation.Roll = static_cast<UJigsawPiece*>(CurrentGrabbedObject)->GetCurrentRotationRoll();
-	PhysicsHandleUsed->SetTargetRotation(InitialPuzzlePieceRotation);
+	PhysicsHandle->SetTargetRotation(InitialPuzzlePieceRotation);
+}
+
+void UJigsawPieceHandler::Handle()
+{
+	MoveObject();
+	UpdatePuzzleSpace();	
 }
 
 void UJigsawPieceHandler::MoveObject()
 {
-	if (!PhysicsHandleUsed) { return; }
+	UPhysicsHandleComponent* PhysicsHandle = UPlayerCharacter::GetPhysicsHandle();
+	if (!PhysicsHandle) { return; }
 
-	PhysicsHandleUsed->SetTargetLocation(UGrabber::GetPlayersReachPos(Reach));
+	PhysicsHandle->SetTargetLocation(UPlayerCharacter::GetPlayersReachPos(Reach));
 
 	FRotator NewGrabbedObjectRotation = GetCurrentGrabbedObjectRotation();
-	NewGrabbedObjectRotation.Pitch = UGrabber::GetPlayersRotation().Pitch;
-	NewGrabbedObjectRotation.Yaw = UGrabber::GetPlayersRotation().Yaw;
-	PhysicsHandleUsed->SetTargetRotation(NewGrabbedObjectRotation);
-
-	UpdatePuzzleSpace();
+	NewGrabbedObjectRotation.Pitch = UPlayerCharacter::GetPlayersRotation().Pitch;
+	NewGrabbedObjectRotation.Yaw = UPlayerCharacter::GetPlayersRotation().Yaw;
+	PhysicsHandle->SetTargetRotation(NewGrabbedObjectRotation);	
 }
 
 void UJigsawPieceHandler::UpdatePuzzleSpace() {
 	if (!CurrentGrabbedObject) { return; }
 
-	const FHitResult PuzzleSpace = UGrabber::GetFirstPuzzleSpaceInReach(Reach);
+	const FHitResult PuzzleSpace = UPlayerCharacter::GetFirstPuzzleSpaceInReach(Reach);
 
 	if (PuzzleSpace.GetActor() != nullptr) {
 		static_cast<UJigsawPiece*>(CurrentGrabbedObject)->SetPuzzleSpace(static_cast<ATriggerVolume*>(PuzzleSpace.GetActor()));
@@ -80,11 +93,12 @@ void UJigsawPieceHandler::UpdatePuzzleSpace() {
 }
 
 void UJigsawPieceHandler::SpinJigsawPiece(){
-	if (!PhysicsHandleUsed) { return; }
+	UPhysicsHandleComponent* PhysicsHandle = UPlayerCharacter::GetPhysicsHandle();
+	if (!PhysicsHandle) { return; }
 	if (!CurrentGrabbedObject) { return; }
 
 	FRotator CurrentGrabbedObjectRotation = GetCurrentGrabbedObjectRotation();
 	CurrentGrabbedObjectRotation.Roll = static_cast<UJigsawPiece*>(CurrentGrabbedObject)->GetNextRotationRoll();
-	PhysicsHandleUsed->SetTargetRotation(CurrentGrabbedObjectRotation);
+	PhysicsHandle->SetTargetRotation(CurrentGrabbedObjectRotation);
 }
 

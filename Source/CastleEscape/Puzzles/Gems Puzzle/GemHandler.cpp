@@ -1,46 +1,70 @@
 // Copyright Henrique Rachti Assumpção 2020
 
 #include "GemHandler.h"
-#include "CastleEscape/PlayerController/Grabber.h"
+
+#include "Gem.h"
+#include "PlayerController/PlayerCharacter.h"
 
 UGemHandler::UGemHandler()
 {
 
 }
 
-void UGemHandler::InitHandler(UPhysicsHandleComponent* PhysicsHandle, UGrabbedObject* GrabbedObject) {
+void UGemHandler::InitHandler(AActor* GrabbedObject) {
 
-	SetPhysicsHandle(PhysicsHandle);
-	SetGrabbedObject(GrabbedObject);
-	UpdateGrabbedObjectStatus(true);
+	SetGrabbedObject(GrabbedObject->FindComponentByClass<UGem>());
+	SetupInputComponent();
+	UpdateGrabbedObjectStats(true);
+}
+
+void UGrabbableObjectHandler::SetupInputComponent() {
+	UInputComponent* InputComponent = UPlayerCharacter::GetInputComponent();
+	if (InputComponent) {
+		InputComponent->BindAction("Grab", IE_Released, this, &UGrabbableObjectHandler::Release);
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("InputComponent isn't attached"))
+	}
 }
 
 void UGemHandler::DestroyHandler() {
-	UpdateGrabbedObjectStatus(false);
+	UpdateGrabbedObjectStats(false);
 
-	PhysicsHandleUsed = nullptr;
+	UInputComponent* InputComponent = UPlayerCharacter::GetInputComponent();
+	if (InputComponent) {
+		InputComponent->RemoveActionBinding("Grab", IE_Released);
+	}
+
+
 	CurrentGrabbedObject = nullptr;
 }
 
+void UGemHandler::Handle()
+{
+	MoveObject();
+	UpdatePuzzleSpace();	
+}
+
+
 void UGemHandler::MoveObject()
 {
-	if (!PhysicsHandleUsed) { return; }
+	UPhysicsHandleComponent* PhysicsHandle = UPlayerCharacter::GetPhysicsHandle();
+	if (!PhysicsHandle) { return; }
 	
-	if(PhysicsHandleUsed->GetGrabbedComponent())
+	if(PhysicsHandle->GetGrabbedComponent())
 	{
-		PhysicsHandleUsed->SetTargetLocation(UGrabber::GetPlayersReachPos(50.f));
+		PhysicsHandle->SetTargetLocation(UPlayerCharacter::GetPlayersReachPos(50.f));
 
-		FRotator NewGrabbedObjectRotation = UGrabber::GetPlayersRotation();
+		FRotator NewGrabbedObjectRotation = UPlayerCharacter::GetPlayersRotation();
 		NewGrabbedObjectRotation.Pitch += 90;
-		PhysicsHandleUsed->SetTargetRotation(NewGrabbedObjectRotation);
-	}
-	UpdatePuzzleSpace();
+		PhysicsHandle->SetTargetRotation(NewGrabbedObjectRotation);
+	}	
 }
 
 void UGemHandler::UpdatePuzzleSpace() {
 	if (!CurrentGrabbedObject) { return; }
 
-	const FHitResult PuzzleSpace = UGrabber::GetFirstPuzzleSpaceInReach(DistanceToSearchForPuzzleSpaces);
+	const FHitResult PuzzleSpace = UPlayerCharacter::GetFirstPuzzleSpaceInReach(DistanceToSearchForPuzzleSpaces);
 
 	if (PuzzleSpace.GetActor()) {
 
@@ -50,7 +74,7 @@ void UGemHandler::UpdatePuzzleSpace() {
 		}
 		else
 		{
-			UE_LOG(LogTemp,Warning,TEXT("No Puzzle Managerrt"));	
+			UE_LOG(LogTemp,Warning,TEXT("No Puzzle Manager"));	
 		}
 		
 		static_cast<UGem*>(CurrentGrabbedObject)->SetPuzzleSpace(static_cast<ATriggerVolume*>(PuzzleSpace.GetActor()));
