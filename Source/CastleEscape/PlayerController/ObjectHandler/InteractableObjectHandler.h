@@ -18,16 +18,15 @@ class CASTLEESCAPE_API UInteractableObjectHandler : public UObjectHandler
     public:
     static class UInteractableObjectHandler* Make(AActor* InteractedObject);
 
-    virtual void Handle() override;
     virtual void MoveObject() { check(0 && "You must override this"); }
-    virtual void InitHandler(UInteractableObject* InteractedObjectToInit) { check(0 && "You must override this"); }
-    virtual void SetupInputComponent() override;
+    virtual void InitHandler(AActor* InteractedObjectToInit) { check(0 && "You must override this"); }
     virtual void DestroyHandler() { check(0 && "You must override this"); }
-    virtual void UpdatePuzzleSpace() { check(0 && "You must override this"); }
-
-    void Interact();
+    virtual void SetInteractedObject(UInteractableObject* InteractedObjectToSet){ check(0 && "You must override this"); }
   
     protected:
     float Reach = 90.f;
+
+    UPROPERTY()
+    UInteractableObject* CurrentInteractableObject = nullptr;
 };
 

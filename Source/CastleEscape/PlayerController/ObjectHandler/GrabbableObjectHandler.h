@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "ObjectHandler.h"
-#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "CastleEscape/PlayerController/GrabbableObject.h"
 #include "GrabbableObjectHandler.generated.h"
 

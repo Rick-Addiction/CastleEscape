@@ -2,42 +2,23 @@
 
 #include "InteractableObjectHandler.h"
 
-#include "PlayerController/PlayerCharacter.h"
+#include "Puzzles/Bells Puzzle/BellsHandler.h"
 
 UInteractableObjectHandler* UInteractableObjectHandler::Make(AActor* InteractedObject)
 {
-	UInteractableObjectHandler* InteractableObjectHandler =NewObject<UInteractableObjectHandler>(UInteractableObjectHandler::StaticClass());
-     return InteractableObjectHandler;
-}
+	const EObjectType ObjectType = GetObjectType(InteractedObject);
+	
+	UInteractableObjectHandler* InteractableObjectHandler;
 
-void UInteractableObjectHandler::SetupInputComponent() {
-	UInputComponent* InputComponent = UPlayerCharacter::GetInputComponent();
-	if (InputComponent) {
-		InputComponent->BindAction("Interact", IE_Pressed, this, &UInteractableObjectHandler::Interact);	
+	UE_LOG(LogTemp,Warning,TEXT("Trying to create Bells handler"));
+	
+	if (ObjectType == EObjectType::Bell) {
+		UE_LOG(LogTemp,Warning,TEXT("Bells handler created"));
+		InteractableObjectHandler = NewObject<UBellsHandler>(UBellsHandler::StaticClass());
+		InteractableObjectHandler->InitHandler(InteractedObject);
+        
+		return InteractableObjectHandler;
 	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("InputComponent isn't attached"))
-	}
+	else
+		return nullptr;
 }
-
-
-void UInteractableObjectHandler::Handle() {	
-
-	Interact();
-		
-}
-
-void UInteractableObjectHandler::Interact() {	
-
-	UE_LOG(LogTemp, Error, TEXT("Object has received an interaction"))
-		
-}
-
-
-
-
-
-
-
-
-

@@ -11,6 +11,7 @@ UENUM(BlueprintType)
 enum class EObjectType : uint8 {
     Jigsaw_Piece UMETA(DisplayName = "Jigsaw_Piece"),
     Gem UMETA(DisplayName = "Gem"),
+    Bell UMETA(DisplayName = "Bell"),
     Undefined UMETA(DisplayName = "Undefined")
 };
 
