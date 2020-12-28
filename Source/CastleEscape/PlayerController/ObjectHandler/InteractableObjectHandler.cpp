@@ -2,7 +2,8 @@
 
 #include "InteractableObjectHandler.h"
 
-#include "Puzzles/Bells Puzzle/BellsHandler.h"
+#include "Puzzles/Bells Puzzle/Bell/BellsHandler.h"
+#include "Puzzles/Bells Puzzle/MelodySphere/MelodySphereHandler.h"
 
 UInteractableObjectHandler* UInteractableObjectHandler::Make(AActor* InteractedObject)
 {
@@ -19,6 +20,14 @@ UInteractableObjectHandler* UInteractableObjectHandler::Make(AActor* InteractedO
         
 		return InteractableObjectHandler;
 	}
-	else
+	else if (ObjectType == EObjectType::MelodySphere)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("MelodySphere handler created"));
+		InteractableObjectHandler = NewObject<UMelodySphereHandler>(UMelodySphereHandler::StaticClass());
+		InteractableObjectHandler->InitHandler(InteractedObject);
+        
+		return InteractableObjectHandler;		
+	}
+	else 
 		return nullptr;
 }

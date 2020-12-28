@@ -12,6 +12,7 @@ enum class EObjectType : uint8 {
     Jigsaw_Piece UMETA(DisplayName = "Jigsaw_Piece"),
     Gem UMETA(DisplayName = "Gem"),
     Bell UMETA(DisplayName = "Bell"),
+    MelodySphere UMETA(DisplayName = "MelodySphere"),
     Undefined UMETA(DisplayName = "Undefined")
 };
 
