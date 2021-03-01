@@ -8,8 +8,10 @@
 UENUM(BlueprintType)
 enum EPipeCurrentState
 {
+	SCHEDULED_TO_FLOW_WATER UMETA(DisplayName = "SCHEDULED_TO_FLOW_WATER"),
 	FLOWING_WATER UMETA(DisplayName = "FLOWING_WATER"),
     FULL_OF_WATER UMETA(DisplayName = "FULL_OF_WATER"),
+	SCHEDULED_TO_DRAIN_OUT_WATER UMETA(DisplayName = "SCHEDULED_TO_DRAIN_OUT_WATER"),
     DRAINING_OUT_WATER UMETA(DisplayName = "DRAINING_WATER"),
 	EMPTY_OF_WATER UMETA(DisplayName = "EMPTY_OF_WATER"),
 };
@@ -24,23 +26,42 @@ class CASTLEESCAPE_API UPipe : public UActorComponent
 	protected:	
 	void CreateDynamicLiquidMaterial();
 	USceneComponent* GetLiquidSceneComponent();	
-	UStaticMeshComponent* GetLiquidStaticMeshComponent();
+	UStaticMeshComponent* GetLiquidStaticMeshComponent();	
+
+	virtual void ChangePipeToFlowingState(){ check(0 && "You must override this"); };
+	virtual void ManageFlowWater(float DeltaTime){ check(0 && "You must override this"); };	
+
+	virtual void ChangePipeToDrainOutState(){ check(0 && "You must override this"); };
+	virtual void ManageDrainOutWater(float DeltaTime){ check(0 && "You must override this"); };
+
+	virtual void SettingNextPipe(){ check(0 && "You must override this"); };
+	virtual void SettingValveThatControlsThePipe(){ check(0 && "You must override this"); };
+	virtual void CheckAndStartNextPipe(){ check(0 && "You must override this"); };
+
 	
 	public:
 	virtual void FlowWater(float DeltaTime){ check(0 && "You must override this"); };
 	virtual void DrainOutWater(float DeltaTime){ check(0 && "You must override this"); };
-	virtual void CheckAndStartNextPipe(){ check(0 && "You must override this"); };
+	
 	virtual bool IsPipeFull(){ check(0 && "You must override this"); return 0;};
 	virtual bool IsPipeEmpty(){ check(0 && "You must override this"); return 0;};
-	virtual void ChangePipeToDrainOutMode(){ check(0 && "You must override this"); };
-	virtual void ChangePipeToFlowingMode(){ check(0 && "You must override this"); };
+	virtual bool IsPipeFlowEnable(){ check(0 && "You must override this"); return 0;};
+	
+	virtual void SchedulePipeToDrainOutState(){ check(0 && "You must override this"); };
+	virtual void SchedulePipeToFlowWaterState(){ check(0 && "You must override this"); };
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<EPipeCurrentState> CurrentState = EPipeCurrentState::EMPTY_OF_WATER;
+	TEnumAsByte<EPipeCurrentState> CurrentState = EMPTY_OF_WATER;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float WaterSpeed = 0.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AActor* NextPipe = nullptr;
+
+	UPROPERTY()
+	AActor* PreviousPipe = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* ValveThatControlsThePipe = nullptr;
 };

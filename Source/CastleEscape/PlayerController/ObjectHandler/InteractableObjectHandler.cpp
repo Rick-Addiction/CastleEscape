@@ -1,9 +1,10 @@
-// Copyright Henrique Rachti Assumpção 2020
+// Copyright Henrique Rachti AssumpÃ§Ã£o 2020
 
 #include "InteractableObjectHandler.h"
 
 #include "Puzzles/Bells Puzzle/Bell/BellsHandler.h"
 #include "Puzzles/Bells Puzzle/MelodySphere/MelodySphereHandler.h"
+#include "Puzzles/Pipes Puzzle/PipeValveHandler.h"
 
 UInteractableObjectHandler* UInteractableObjectHandler::Make(AActor* InteractedObject)
 {
@@ -24,6 +25,14 @@ UInteractableObjectHandler* UInteractableObjectHandler::Make(AActor* InteractedO
 	{
 		UE_LOG(LogTemp,Warning,TEXT("MelodySphere handler created"));
 		InteractableObjectHandler = NewObject<UMelodySphereHandler>(UMelodySphereHandler::StaticClass());
+		InteractableObjectHandler->InitHandler(InteractedObject);
+        
+		return InteractableObjectHandler;		
+	}
+	else if (ObjectType == EObjectType::PipeValve)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("PipeValve handler created"));
+		InteractableObjectHandler = NewObject<UPipeValveHandler>(UPipeValveHandler::StaticClass());
 		InteractableObjectHandler->InitHandler(InteractedObject);
         
 		return InteractableObjectHandler;		

@@ -1,4 +1,4 @@
-// Copyright Henrique Rachti Assumpção 2020
+// Copyright Henrique Rachti AssumpÃ§Ã£o 2020
 
 #pragma once
 
@@ -13,6 +13,7 @@ enum class EObjectType : uint8 {
     Gem UMETA(DisplayName = "Gem"),
     Bell UMETA(DisplayName = "Bell"),
     MelodySphere UMETA(DisplayName = "MelodySphere"),
+    PipeValve UMETA(DisplayName = "PipeValve"),
     Undefined UMETA(DisplayName = "Undefined")
 };
 
