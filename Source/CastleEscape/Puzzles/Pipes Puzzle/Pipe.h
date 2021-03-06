@@ -64,7 +64,7 @@ class CASTLEESCAPE_API UPipe : public UActorComponent
 	float WaterSpeed = 0.5f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* NextPipe;
+	TArray<AActor*> NextPipes;
 
 	UPROPERTY()
 	UPipe* PreviousPipe = nullptr;
