@@ -41,6 +41,9 @@ class CASTLEESCAPE_API UPipe : public UActorComponent
 
 	virtual void CheckAndFlowNextPipe(){ check(0 && "You must override this"); };
 	virtual void CheckAndDrainOutNextPipe(){ check(0 && "You must override this"); };
+
+	virtual void HideWater(){ check(0 && "You must override this"); };
+	virtual void ExposeWater(){ check(0 && "You must override this"); };
 	
 	public:
 	virtual void FlowWater(float DeltaTime){ check(0 && "You must override this"); };
