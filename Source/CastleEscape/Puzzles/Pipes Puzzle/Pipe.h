@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Pipe.generated.h"
 
+class UPipeValve;
+class UPipe;
 UENUM(BlueprintType)
 enum EPipeCurrentState
 {
@@ -16,11 +18,22 @@ enum EPipeCurrentState
 	EMPTY_OF_WATER UMETA(DisplayName = "EMPTY_OF_WATER"),
 };
 
+USTRUCT(BlueprintType)
+struct FSourcesOfWater
+{
+	GENERATED_BODY();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* Pipe = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* ValveThatEnableTheFlow = nullptr;
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CASTLEESCAPE_API UPipe : public UActorComponent
 {
 	GENERATED_BODY()
-
 
 	protected:	
 	void CreateDynamicLiquidMaterial();
@@ -36,7 +49,7 @@ class CASTLEESCAPE_API UPipe : public UActorComponent
 	virtual void ManageDrainOutWater(float DeltaTime){ check(0 && "You must override this"); };
 	
 
-	virtual void SettingNextPipe(){ check(0 && "You must override this"); };
+	virtual void SettingNextPipes(){ check(0 && "You must override this"); };
 	virtual void SettingValveThatControlsThePipe(){ check(0 && "You must override this"); };
 
 	virtual void CheckAndFlowNextPipe(){ check(0 && "You must override this"); };
@@ -54,7 +67,7 @@ class CASTLEESCAPE_API UPipe : public UActorComponent
 	virtual bool IsPipeFull(){ check(0 && "You must override this"); return 0;};
 	virtual bool IsPipeEmpty(){ check(0 && "You must override this"); return 0;};
 	
-	virtual bool IsPipeFlowEnable(){ check(0 && "You must override this"); return 0;};
+	virtual bool IsPipeAbleToFlowWater(){ check(0 && "You must override this"); return 0;};
 	virtual bool IsPipeDrainOutAble(){ check(0 && "You must override this"); return 0;};
 	
 	virtual void SchedulePipeToDrainOutState(){ check(0 && "You must override this"); };
@@ -66,12 +79,9 @@ class CASTLEESCAPE_API UPipe : public UActorComponent
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float WaterSpeed = 0.5f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<AActor*> NextPipes;
-
-	UPROPERTY()
-	UPipe* PreviousPipe = nullptr;
+    UPROPERTY()
+	TArray<UPipe*> NextPipes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* ValveThatControlsThisPipe = nullptr;
+	TArray<FSourcesOfWater> SourcesOfWater;
 };
